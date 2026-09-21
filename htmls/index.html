@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Z-SURVIVAL // 좀비 아포칼립스 생존 가이드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        zred: '#ff3333',
+                        zorange: '#ff6600',
+                        zdark: '#0a0a0c',
+                        zcard: '#121318',
+                        zborder: '#2a1b1b',
+                    },
+                    fontFamily: {
+                        mono: ['"Share Tech Mono"', 'Courier New', 'Courier', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        
+        body {
+            font-family: 'Share Tech Mono', monospace, sans-serif;
+            background-color: #0a0a0c;
+            color: #d1d5db;
+        }
+
+        .scanlines {
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.25) 50%
+            ), linear-gradient(
+                90deg,
+                rgba(255, 0, 0, 0.03),
+                rgba(0, 255, 0, 0.01),
+                rgba(0, 0, 255, 0.03)
+            );
+            background-size: 100% 4px, 6px 100%;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { text-shadow: 0 0 5px rgba(255, 51, 51, 0.6); }
+            50% { text-shadow: 0 0 20px rgba(255, 51, 51, 0.9), 0 0 30px rgba(255, 102, 0, 0.6); }
+        }
+
+        .glitter-text {
+            animation: pulse-glow 2s infinite;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0c;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a1b1b;
+            border: 1px solid #ff3333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff3333;
+        }
+    </style>
+</head>
+<body class="min-h-screen scanlines relative overflow-x-hidden">
+
+    <header class="border-b border-zred/40 bg-zdark/90 sticky top-0 z-50 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-2">
+            <div class="flex items-center space-x-3">
+                <span class="inline-block w-3 h-3 bg-zred rounded-full animate-ping"></span>
+                <h1 class="text-xl md:text-2xl font-black tracking-widest text-zred glitter-text uppercase">
+                    [DEFCON 1] Z-SURVIVAL PROTOCOL
+                </h1>
+            </div>
+            <div class="flex items-center space-x-4 text-xs md:text-sm text-zorange font-bold tracking-wider">
+                <span id="live-clock" class="border border-zorange/50 px-3 py-1 rounded bg-zorange/10">SYS_TIME: LOADING...</span>
+                <span class="border border-zred/50 px-3 py-1 rounded bg-zred/10 animate-pulse">STATUS: INFECTION SPREADING</span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="bg-zcard border-b border-zborder shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 flex overflow-x-auto space-x-2 py-3 no-scrollbar">
+            <button onclick="switchTab('tab-day1')" class="tab-btn px-4 py-2 text-sm md:text-base font-bold rounded border border-zred/60 bg-zred/20 text-zred hover:bg-zred hover:text-white transition-all whitespace-nowrap active-tab" data-target="tab-day1">
+                ⚡ D-Day 초기 24시간
+            </button>
+            <button onclick="switchTab('tab-gear')" class="tab-btn px-4 py-2 text-sm md:text-base font-bold rounded border border-zborder bg-zdark text-gray-400 hover:border-zorange hover:text-zorange transition-all whitespace-nowrap" data-target="tab-gear">
+                🎒 필수 생존 장비
+            </button>
+            <button onclick="switchTab('tab-shelter')" class="tab-btn px-4 py-2 text-sm md:text-base font-bold rounded border border-zborder bg-zdark text-gray-400 hover:border-zorange hover:text-zorange transition-all whitespace-nowrap" data-target="tab-shelter">
+                🏰 거주지 요새화
+            </button>
+            <button onclick="switchTab('tab-combat')" class="tab-btn px-4 py-2 text-sm md:text-base font-bold rounded border border-zborder bg-zdark text-gray-400 hover:border-zorange hover:text-zorange transition-all whitespace-nowrap" data-target="tab-combat">
+                ⚔️ 전투 및 탈출 전술
+            </button>
+            <button onclick="switchTab('tab-community')" class="tab-btn px-4 py-2 text-sm md:text-base font-bold rounded border border-zborder bg-zdark text-gray-400 hover:border-zorange hover:text-zorange transition-all whitespace-nowrap" data-target="tab-community">
+                🌱 장기 생존 & 커뮤니티
+            </button>
+            <button onclick="switchTab('tab-simulator')" class="tab-btn px-4 py-2 text-sm md:text-base font-bold rounded border border-zborder bg-zdark text-gray-400 hover:border-zorange hover:text-zorange transition-all whitespace-nowrap">
+                🧪 생존 확률 계산기
+            </button>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+
+        <!-- TAB 1: D-Day 초기 24시간 -->
+        <section id="tab-day1" class="tab-content space-y-6">
+            <div class="border border-zred/50 bg-zcard/80 p-6 rounded-lg shadow-2xl relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 text-9xl text-zred/5 font-black select-none pointer-events-none">24H</div>
+                <h2 class="text-2xl md:text-3xl font-bold text-zred mb-4 flex items-center gap-3">
+                    <span class="text-zorange">▶</span> Phase 1: D-Day 초기 24시간 대응 프로토콜
+                </h2>
+                <p class="text-gray-300 mb-6 leading-relaxed">
+                    감염 사태 발생 직후의 24시간은 생존 확률의 80%를 결정합니다. 패닉에 빠지지 않고 냉정하게 우선순위를 판단해야 합니다. 불필요한 외출을 삼가고 즉각적인 정보 수집과 자원 확보에 착수하십시오.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="border border-zborder bg-zdark p-5 rounded-lg hover:border-zred transition-colors">
+                        <div class="text-zred font-bold text-lg mb-2">01. 패닉 방지 및 정보 확립</div>
+                        <p class="text-sm text-gray-400 leading-normal">
+                            인파가 몰리는 대피소나 도심 메인스트리트는 피하십시오. 공공 방송, 비상 라디오 주파수를 확보하고 정부/군 당국의 공식 발표를 청취합니다.
+                        </p>
+                    </div>
+                    <div class="border border-zborder bg-zdark p-5 rounded-lg hover:border-zred transition-colors">
+                        <div class="text-zred font-bold text-lg mb-2">02. 수돗물 및 전력 차단 대비</div>
+                        <p class="text-sm text-gray-400 leading-normal">
+                            단수 및 정전은 12시간 내에 발생합니다. 욕조, 대야, 빈트럭 등에 즉시 식수를 최대한 확보하고, 모든 보조 배터리를 충전하십시오.
+                        </p>
+                    </div>
+                    <div class="border border-zborder bg-zdark p-5 rounded-lg hover:border-zred transition-colors">
+                        <div class="text-zred font-bold text-lg mb-2">03. 즉시 피난 vs 자택 농성 결정</div>
+                        <p class="text-sm text-gray-400 leading-normal">
+                            거주지가 아파트 고층이고 방어력이 높다면 자택 농성이 유리합니다. 단독 주택이거나 치안 취약 지역이라면 즉시 탈출을 준비하세요.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: 필수 생존 장비 리스트 -->
+        <section id="tab-gear" class="tab-content hidden space-y-6">
+            <div class="border border-zorange/50 bg-zcard/80 p-6 rounded-lg shadow-2xl">
+                <h2 class="text-2xl md:text-3xl font-bold text-zorange mb-4 flex items-center gap-3">
+                    <span class="text-zred">▶</span> Phase 2: 버디백(Bug-out Bag) 및 필수 생존 장비
+                </h2>
+                <p class="text-gray-300 mb-6">
+                    언제든 집을 떠나야 할 상황에 대비해 최소 3일 치 생존 물품이 담긴 백팩을 상시 구비해야 합니다. 무게는 체중의 15%를 넘지 않도록 조정하십시오.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="border border-zborder bg-zdark p-4 rounded">
+                        <div class="text-zorange font-bold text-base mb-2">💧 식수 및 정수</div>
+                        <ul class="text-sm text-gray-400 space-y-1 list-disc list-inside">
+                            <li>휴대용 정수기 (카멜백 등)</li>
+                            <li>정수 알약 (Aquatabs)</li>
+                            <li>접이식 물병 2L</li>
+                        </ul>
+                    </div>
+                    <div class="border border-zborder bg-zdark p-4 rounded">
+                        <div class="text-zorange font-bold text-base mb-2">🥫 비상 식량</div>
+                        <ul class="text-sm text-gray-400 space-y-1 list-disc list-inside">
+                            <li>고열량 전투식량 / 에너지바</li>
+                            <li>통조림 (따기 쉬운 것)</li>
+                            <li>비타민 및 소금 정제</li>
+                        </ul>
+                    </div>
+                    <div class="border border-zborder bg-zdark p-4 rounded">
+                        <div class="text-zorange font-bold text-base mb-2">🔪 도구 및 방어</div>
+                        <ul class="text-sm text-gray-400 space-y-1 list-disc list-inside">
+                            <li>다목적 멀티툴 / 생존 나이프</li>
+                            <li>가죽 장갑 및 보호 고글</li>
+                            <li>파이어스틸 & 방수 성냥</li>
+                        </ul>
+                    </div>
+                    <div class="border border-zborder bg-zdark p-4 rounded">
+                        <div class="text-zorange font-bold text-base mb-2">🩹 의료 및 위생</div>
+                        <ul class="text-sm text-gray-400 space-y-1 list-disc list-inside">
+                            <li>지혈대 및 압박붕대</li>
+                            <li>광범위 항생제 및 진통제</li>
+                            <li>물티슈 및 소독용 에탄올</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: 거주지 요새화 전략 -->
+        <section id="tab-shelter" class="tab-content hidden space-y-6">
+            <div class="border border-zred/50 bg-zcard/80 p-6 rounded-lg shadow-2xl">
+                <h2 class="text-2xl md:text-3xl font-bold text-zred mb-4 flex items-center gap-3">
+                    <span class="text-zorange">▶</span> Phase 3: 거주지 은신처 선정 및 요새화 전략
+                </h2>
+                <p class="text-gray-300 mb-6">
+                    안전한 은신처는 생존의 베이스캠프입니다. 외부 시선을 차단하고 출입구를 최소화하여 좀비와 약탈자로부터 완벽히 격리되어야 합니다.
+                </p>
+
+                <div class="space-y-4">
+                    <div class="border border-zborder bg-zdark p-5 rounded-lg">
+                        <h3 class="text-lg font-bold text-zred mb-2">1단계: 출입구 및 창문 차단 (Choke Point)</h3>
+                        <p class="text-sm text-gray-400">
+                            1층 출입구는 철판이나 두꺼운 목재로 이중 차단하고, 2층 이상일 경우 사다리를 사용 후 철거하여 외부 진입을 원천 봉쇄하십시오. 창문에는 철망을 설치해 물건 투척이나 돌진을 막습니다.
+                        </p>
+                    </div>
+                    <div class="border border-zborder bg-zdark p-5 rounded-lg">
+                        <h3 class="text-lg font-bold text-zred mb-2">2단계: 소음 및 불빛 통관 (Stealth Living)</h3>
+                        <p class="text-sm text-gray-400">
+                            야간에는 반드시 암막 커튼을 치고, 실내 조명은 외부에서 보이지 않도록 낮게 유지하십시오. 발전기 가동 시 소음이 외부로 새어나가지 않도록 방음 조치를 취해야 합니다.
+                        </p>
+                    </div>
+                    <div class="border border-zborder bg-zdark p-5 rounded-lg">
+                        <h3 class="text-lg font-bold text-zred mb-2">3단계: 비상 탈출로 (Escape Route) 확보</h3>
+                        <p class="text-sm total-text text-sm text-gray-400">
+                            건물이 포위되었을 때를 대비해 로프 사다리나 인접 건물로 연결되는 비상 탈출 경로를 최소 2개 이상 사전에 확보해 두어야 합니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: 전투 및 위기 탈출 전술 -->
+        <section id="tab-combat" class="tab-content hidden space-y-6">
+            <div class="border border-zorange/50 bg-zcard/80 p-6 rounded-lg shadow-2xl">
+                <h2 class="text-2xl md:text-3xl font-bold text-zorange mb-4 flex items-center gap-3">
+                    <span class="text-zred">▶</span> Phase 4: 근접 전투 및 위기 상황 탈출 전술
+                </h2>
+                <p class="text-gray-300 mb-6">
+                    총기는 소음 때문에 무리한 어그로를 끌 수 있습니다. 근접 무기 사용법과 소음 통제 전술이 생존의 핵심입니다.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border border-zborder bg-zdark p-5 rounded-lg">
+                        <div class="text-zred font-bold text-lg mb-2">⚠️ 근접전 철칙 (Melee Rules)</div>
+                        <ul class="text-sm text-gray-400 space-y-2 list-disc list-inside">
+                            <li>날붙이보다는 관통 및 타격 무기(쇠지렛대, 크리켓 배트)가 내구성 면에서 유리합니다.</li>
+                            <li>좀비의 급소는 뇌간(뒷골)입니다. 정면 타격보다는 확실한 한 방을 노리세요.</li>
+                            <li>절대 바닥에 넘어지거나 둘 이상의 적에게 둘러싸이지 마십시오.</li>
+                        </ul>
+                    </div>
+                    <div class="border border-zborder bg-zdark p-5 rounded-lg">
+                        <div class="text-zorange font-bold text-lg mb-2">🏃‍♂️ 회피 및 소음 분산 전술</div>
+                        <ul class="text-sm text-gray-400 space-y-2 list-disc list-inside">
+                            <li>시야에서 벗어나는 것이 가장 좋은 전투입니다. 숨는 것을 최우선으로 하세요.</li>
+                            <li>추격당할 때는 동전이나 시계 알람 등을 반대 방향으로 던져 소음으로 시선을 분산시킵니다.</li>
+                            <li>바람의 방향을 확인하여 후각을 이용한 추적을 따돌리세요.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: 장기 생존과 커뮤니티 -->
+        <section id="tab-community" class="tab-content hidden space-y-6">
+            <div class="border border-zred/50 bg-zcard/80 p-6 rounded-lg shadow-2xl">
+                <h2 class="text-2xl md:text-3xl font-bold text-zred mb-4 flex items-center gap-3">
+                    <span class="text-zorange">▶</span> Phase 5: 장기 생존, 식량 자급 및 커뮤니티 규칙
+                </h2>
+                <p class="text-gray-300 mb-6">
+                    혼자의 힘으로는 몇 달 버티기 어렵습니다. 신뢰할 수 있는 동료를 모으고 지속 가능한 농업과 위생 관리를 시작해야 합니다.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="border border-zborder bg-zdark p-5 rounded-lg">
+                        <div class="text-zred font-bold text-base mb-2">🌾 자가 수급 및 농업</div>
+                        <p class="text-sm text-gray-400">
+                            옥상이나 실내 수직 정원을 활용해 감자, 콩 등 고단백·고칼로리 작물을 재배하고 빗물 정수 시스템을 구축합니다.
+                        </p>
+                    </div>
+                    <div class="border border-zborder bg-zdark p-5 rounded-lg">
+                        <div class="text-zred font-bold text-base mb-2">🧼 위생 및 질병 통제</div>
+                        <p class="text-sm text-gray-400">
+                            아포칼립스 세계관에서 가장 무서운 적은 감염병입니다. 배설물 처리와 식기 소독을 철저히 하고 사체 처리 시 방호복을 착용하세요.
+                        </p>
+                    </div>
+                    <div class="border border-zborder bg-zdark p-5 rounded-lg">
+                        <div class="text-zred font-bold text-base mb-2">🤝 커뮤니티 규칙</div>
+                        <p class="text-sm text-gray-400">
+                            구성원 간의 명확한 역할 분담(경비, 보급, 의료)과 엄격한 내부 규율을 세워 불화와 내부 배신을 미연에 방지합니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SIMULATOR TAB (Bonus interactive tool) -->
+        <section id="tab-simulator" class="tab-content hidden space-y-6">
+            <div class="border border-zorange/50 bg-zcard/80 p-6 rounded-lg shadow-2xl">
+                <h2 class="text-2xl md:text-3xl font-bold text-zorange mb-4 flex items-center gap-3">
+                    <span class="text-zred">▶</span> 나의 좀비 생존 확률 계산기
+                </h2>
+                <p class="text-gray-300 mb-6">
+                    당신의 현재 조건과 보유 장비를 입력하여 아포칼립스 생존 확률을 실시간으로 진단해 보세요.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-zdark p-6 rounded border border-zborder">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-gray-300 mb-1">체력 및 운동 능력 (1~10)</label>
+                            <input type="range" id="sim-fitness" min="1" max="10" value="5" class="w-full accent-zorange" oninput="calculateSurvival()">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-300 mb-1">생존 장비 보유 수준 (1~10)</label>
+                            <input type="range" id="sim-gear" min="1" max="10" value="3" class="w-full accent-zorange" oninput="calculateSurvival()">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-300 mb-1">거주지 방어력 (1~10)</label>
+                            <input type="range" id="sim-shelter" min="1" max="10" value="4" class="w-full accent-zorange" oninput="calculateSurvival()">
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center justify-center border border-zborder rounded bg-zcard p-6 text-center">
+                        <div class="text-sm text-gray-400 uppercase tracking-widest mb-2">예상 생존 확률</div>
+                        <div id="sim-result" class="text-5xl font-black text-zred glitter-text mb-2">42%</div>
+                        <div id="sim-msg" class="text-xs text-orange-400">주의: 초반 탈출 과정에서 위험할 수 있습니다. 장비를 보강하세요.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-zborder bg-zdark py-6 mt-12 text-center text-xs text-gray-500">
+        <p>Z-SURVIVAL EMERGENCY PROTOCOL // SECURE WEB SYSTEM v3.4</p>
+        <p class="mt-1 text-zred">Stay Alert. Stay Alive.</p>
+    </footer>
+
+    <script>
+        // Tab switching logic
+        function switchTab(targetId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.add('hidden');
+            });
+            // Show target tab
+            const target = document.getElementById(targetId);
+            if (target) {
+                target.classList.remove('hidden');
+            }
+
+            // Update button styles
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-zred', 'bg-zred/20', 'text-zred');
+                btn.classList.add('border-zborder', 'bg-zdark', 'text-gray-400');
+            });
+            const activeBtn = document.querySelector(`[onclick="switchTab('${targetId}')"]`);
+            if (activeBtn) {
+                activeBtn.classList.remove('border-zborder', 'bg-zdark', 'text-gray-400');
+                activeBtn.classList.add('border-zred', 'bg-zred/20', 'text-zred');
+            }
+        }
+
+        // Real-time clock update
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toISOString().slice(0, 19).replace('T', ' ');
+            document.getElementById('live-clock').innerText = `SYS_TIME: ${timeStr}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Survival calculator logic
+        function calculateSurvival() {
+            const fitness = parseInt(document.getElementById('sim-fitness').value);
+            const gear = parseInt(document.getElementById('sim-gear').value);
+            const shelter = parseInt(document.getElementById('sim-shelter').value);
+
+            const score = Math.min(100, Math.round((fitness * 3.5) + (gear * 4.0) + (shelter * 2.5)));
+            const resultEl = document.getElementById('sim-result');
+            const msgEl = document.getElementById('sim-msg');
+
+            resultEl.innerText = `${score}%`;
+
+            if (score >= 80) {
+                resultEl.className = "text-5xl font-black text-green-500 glitter-text mb-2";
+                msgEl.innerText = "탁월함: 장기 생존 및 리더 역할 수행 가능!";
+            } else if (score >= 50) {
+                resultEl.className = "text-5xl font-black text-zorange glitter-text mb-2";
+                msgEl.innerText = "보통: 철저한 경계와 추가 물자 확보가 필수적입니다.";
+            } else {
+                resultEl.className = "text-5xl font-black text-zred glitter-text mb-2";
+                msgEl.innerText = "위험: 초기 24시간 내에 감염될 확률이 매우 높습니다!";
+            }
+        }
+    </script>
+</body>
+</html>
